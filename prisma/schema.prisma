@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  username String @db.VarChar(100)
+  email String @unique @db.VarChar(200)
+  password String @db.VarChar(100)
+  token String? @db.VarChar(200)
+  product Product[]
+  sale Sale[]
+  expense Expense[]
+  note Note[]
+
+  @@map("users")
+}
+
+model Product {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(100)
+  stock Int
+  basic_price Int
+  selling_price Int
+  user_id Int
+  category_id Int
+  category Categeory @relation(fields: [category_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
+  sale Sale[]
+  @@map("products")
+}
+
+model Categeory {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(100)
+  product Product[]
+
+  @@map("categories")
+}
+
+model Sale {
+  id Int @id @default(autoincrement())
+  created_at DateTime @default(now())
+  receivable Boolean @default(false)
+  prodcut_id Int
+  user_id Int
+  product Product @relation(fields: [prodcut_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("sales")
+}
+
+model Expense {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(100)
+  total Int
+  created_at DateTime @default(now())
+  user_id Int
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("expenses")
+}
+
+model Note {
+  id Int @id @default(autoincrement())
+  note String @db.Text
+  created_at DateTime @default(now())
+  user_id Int
+  user User @relation(fields: [user_id], references: [id])
+}
+

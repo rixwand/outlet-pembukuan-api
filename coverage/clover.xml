@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1695281345540" clover="3.2.0">
+  <project timestamp="1695281345540" name="All files">
+    <metrics statements="115" coveredstatements="110" conditionals="25" coveredconditionals="21" methods="22" coveredmethods="22" elements="162" coveredelements="153" complexity="0" loc="115" ncloc="115" packages="8" files="12" classes="12"/>
+    <package name="src.app">
+      <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="db.ts" path="/home/risu/Documents/Code/nodejs/expressjs/outletPembukuanApi/src/app/db.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+      <file name="web.ts" path="/home/risu/Documents/Code/nodejs/expressjs/outletPembukuanApi/src/app/web.ts">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.controllers">
+      <metrics statements="25" coveredstatements="23" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="5"/>
+      <file name="user-controller.ts" path="/home/risu/Documents/Code/nodejs/expressjs/outletPembukuanApi/src/controllers/user-controller.ts">
+        <metrics statements="25" coveredstatements="23" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="5"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="5" type="stmt"/>
+        <line num="7" count="5" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="10" type="stmt"/>
+        <line num="16" count="10" type="stmt"/>
+        <line num="17" count="7" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="23" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="26" count="1" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="32" count="1" type="stmt"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="37" count="0" type="stmt"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="42" count="4" type="stmt"/>
+        <line num="43" count="4" type="stmt"/>
+        <line num="44" count="3" type="stmt"/>
+        <line num="46" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.errors">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <file name="response-error.ts" path="/home/risu/Documents/Code/nodejs/expressjs/outletPembukuanApi/src/errors/response-error.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="4" count="9" type="stmt"/>
+        <line num="5" count="9" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.middleware">
+      <metrics statements="17" coveredstatements="14" conditionals="10" coveredconditionals="7" methods="3" coveredmethods="3"/>
+      <file name="auth-middleware.ts" path="/home/risu/Documents/Code/nodejs/expressjs/outletPembukuanApi/src/middleware/auth-middleware.ts">
+        <metrics statements="10" coveredstatements="10" conditionals="6" coveredconditionals="5" methods="2" coveredmethods="2"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="11" count="8" type="stmt"/>
+        <line num="12" count="8" type="stmt"/>
+        <line num="14" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="15" count="7" type="stmt"/>
+        <line num="16" count="7" type="cond" truecount="1" falsecount="1"/>
+        <line num="18" count="7" type="stmt"/>
+        <line num="22" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="24" count="6" type="stmt"/>
+      </file>
+      <file name="error-middleware.ts" path="/home/risu/Documents/Code/nodejs/expressjs/outletPembukuanApi/src/middleware/error-middleware.ts">
+        <metrics statements="7" coveredstatements="4" conditionals="4" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="9" count="9" type="cond" truecount="1" falsecount="1"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="13" count="9" type="cond" truecount="1" falsecount="1"/>
+        <line num="14" count="9" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.routes">
+      <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="api.ts" path="/home/risu/Documents/Code/nodejs/expressjs/outletPembukuanApi/src/routes/api.ts">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+      </file>
+      <file name="public-api.ts" path="/home/risu/Documents/Code/nodejs/expressjs/outletPembukuanApi/src/routes/public-api.ts">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.services">
+      <metrics statements="35" coveredstatements="35" conditionals="12" coveredconditionals="11" methods="5" coveredmethods="5"/>
+      <file name="user-service.ts" path="/home/risu/Documents/Code/nodejs/expressjs/outletPembukuanApi/src/services/user-service.ts">
+        <metrics statements="35" coveredstatements="35" conditionals="12" coveredconditionals="11" methods="5" coveredmethods="5"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="25" count="5" type="stmt"/>
+        <line num="30" count="3" type="stmt"/>
+        <line num="36" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="38" count="2" type="stmt"/>
+        <line num="39" count="2" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="54" count="10" type="stmt"/>
+        <line num="59" count="9" type="stmt"/>
+        <line num="69" count="9" type="cond" truecount="2" falsecount="0"/>
+        <line num="70" count="8" type="stmt"/>
+        <line num="71" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="73" count="7" type="stmt"/>
+        <line num="78" count="7" type="stmt"/>
+        <line num="83" count="7" type="stmt"/>
+        <line num="91" count="7" type="stmt"/>
+        <line num="94" count="1" type="stmt"/>
+        <line num="95" count="1" type="stmt"/>
+        <line num="96" count="1" type="stmt"/>
+        <line num="106" count="1" type="stmt"/>
+        <line num="107" count="1" type="stmt"/>
+        <line num="108" count="1" type="stmt"/>
+        <line num="117" count="1" type="stmt"/>
+        <line num="120" count="1" type="stmt"/>
+        <line num="121" count="4" type="stmt"/>
+        <line num="123" count="4" type="stmt"/>
+        <line num="131" count="4" type="cond" truecount="1" falsecount="1"/>
+        <line num="132" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="133" count="2" type="stmt"/>
+        <line num="134" count="2" type="stmt"/>
+        <line num="135" count="2" type="stmt"/>
+        <line num="136" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="137" count="1" type="stmt"/>
+        <line num="139" count="3" type="stmt"/>
+        <line num="151" count="3" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.validation">
+      <metrics statements="9" coveredstatements="9" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+      <file name="user-validation.ts" path="/home/risu/Documents/Code/nodejs/expressjs/outletPembukuanApi/src/validation/user-validation.ts">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+      </file>
+      <file name="validation.ts" path="/home/risu/Documents/Code/nodejs/expressjs/outletPembukuanApi/src/validation/validation.ts">
+        <metrics statements="5" coveredstatements="5" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="20" type="stmt"/>
+        <line num="8" count="20" type="cond" truecount="2" falsecount="0"/>
+        <line num="9" count="17" type="stmt"/>
+        <line num="11" count="3" type="stmt"/>
+      </file>
+    </package>
+    <package name="tests.utils">
+      <metrics statements="13" coveredstatements="13" conditionals="1" coveredconditionals="1" methods="7" coveredmethods="7"/>
+      <file name="user-test-utils.ts" path="/home/risu/Documents/Code/nodejs/expressjs/outletPembukuanApi/tests/utils/user-test-utils.ts">
+        <metrics statements="13" coveredstatements="13" conditionals="1" coveredconditionals="1" methods="7" coveredmethods="7"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="10" count="20" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="18" count="12" type="stmt"/>
+        <line num="27" count="1" type="stmt"/>
+        <line num="28" count="10" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+        <line num="46" count="6" type="stmt"/>
+        <line num="51" count="6" type="stmt"/>
+        <line num="54" count="1" type="stmt"/>
+        <line num="55" count="4" type="stmt"/>
+        <line num="56" count="4" type="stmt"/>
+        <line num="57" count="4" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>
