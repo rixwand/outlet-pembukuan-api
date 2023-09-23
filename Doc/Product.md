@@ -15,8 +15,8 @@ Request Body :
   "name": "string",
   "category_id": "number",
   "stock": "number",
-  "harga_dasar": "number",
-  "harga_jual": "number"
+  "basic_price": "number",
+  "selling_price": "number"
 }
 ```
 
@@ -28,15 +28,17 @@ Response Body Success :
   "name": "string",
   "category": "string",
   "stock": "number",
-  "harga_dasar": "number",
-  "harga_jual": "number"
+  "basic_price": "number",
+  "selling_price": "number"
 }
 ```
 
 Response Body Error :
 
 ```json
-{}
+{
+  "error": "error message"
+}
 ```
 
 ## List All Product
@@ -61,8 +63,8 @@ Response Body Success :
       "name": "string",
       "category": "string",
       "stock": "number",
-      "harga_dasar": "number",
-      "harga_jual": "number"
+      "basic_price": "number",
+      "selling_price": "number"
     }
   ]
 }
@@ -92,8 +94,8 @@ Response Body Success :
   "name": "string",
   "category": "string",
   "stock": "number",
-  "harga_dasar": "number",
-  "harga_jual": "number"
+  "basic_price": "number",
+  "selling_price": "number"
 }
 ```
 
@@ -121,8 +123,8 @@ Request Body :
   "name": "string",
   "category_id": "number",
   "stock": "number",
-  "harga_dasar": "number",
-  "harga_jual": "number"
+  "basic_price": "number",
+  "selling_price": "number"
 }
 ```
 
@@ -134,8 +136,8 @@ Response Body Success :
   "name": "string",
   "category": "string",
   "stock": "number",
-  "harga_dasar": "number",
-  "harga_jual": "number"
+  "basic_price": "number",
+  "selling_price": "number"
 }
 ```
 

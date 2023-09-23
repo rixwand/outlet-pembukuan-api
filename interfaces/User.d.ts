@@ -15,7 +15,7 @@ interface UserInfo extends User {
 declare global {
   namespace Express {
     interface Request {
-      user: User;
+      user: User & { id: number };
     }
   }
 }

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
-export type RouterHandler<T> = (
-  req: Request,
+export type RouterHandler<T, P = {}> = (
+  req: Request<P>,
   res: Response,
   next: NextFunction
-) => Promise<T>;
+) => T;

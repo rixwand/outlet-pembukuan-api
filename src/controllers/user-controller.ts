@@ -2,7 +2,7 @@ import userService from "../services/user-service";
 import { User } from "../../interfaces/User";
 import { RouterHandler } from "../../interfaces/RouterHandler.d";
 
-const register: RouterHandler<void> = async (req, res, next) => {
+const register: RouterHandler<Promise<void>> = async (req, res, next) => {
   try {
     const user = await userService.register(req);
     res.status(200).json({ data: user });
@@ -11,7 +11,7 @@ const register: RouterHandler<void> = async (req, res, next) => {
   }
 };
 
-const login: RouterHandler<void> = async (req, res, next) => {
+const login: RouterHandler<Promise<void>> = async (req, res, next) => {
   try {
     const token = await userService.login(req);
     res.status(200).json({ data: token });
@@ -20,7 +20,7 @@ const login: RouterHandler<void> = async (req, res, next) => {
   }
 };
 
-const logout: RouterHandler<void> = async (req, res, next) => {
+const logout: RouterHandler<Promise<void>> = async (req, res, next) => {
   try {
     await userService.logout(req);
     res.status(200).json({ data: "logout" });
@@ -29,7 +29,7 @@ const logout: RouterHandler<void> = async (req, res, next) => {
   }
 };
 
-const get: RouterHandler<void> = async (req, res, next) => {
+const get: RouterHandler<Promise<void>> = async (req, res, next) => {
   try {
     const user: User = await userService.get(req.user.email);
     res.status(200).json({ data: user });
@@ -38,7 +38,7 @@ const get: RouterHandler<void> = async (req, res, next) => {
   }
 };
 
-const update: RouterHandler<void> = async (req, res, next) => {
+const update: RouterHandler<Promise<void>> = async (req, res, next) => {
   try {
     const user: User = await userService.update(req.user.email, req.body);
     res.status(200).json({ data: user });

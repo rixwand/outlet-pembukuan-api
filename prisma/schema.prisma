@@ -20,6 +20,7 @@ model User {
   sale Sale[]
   expense Expense[]
   note Note[]
+  category Categeory[]
 
   @@map("users")
 }
@@ -42,6 +43,8 @@ model Categeory {
   id Int @id @default(autoincrement())
   name String @db.VarChar(100)
   product Product[]
+  user_id Int
+  user User @relation(fields: [user_id], references: [id])
 
   @@map("categories")
 }

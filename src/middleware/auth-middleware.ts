@@ -20,7 +20,7 @@ export const authMiddleware = (
     process.env.ACCESS_TOKEN_SECRETKEY as string,
     (err, user) => {
       if (err) throw new ResponseError(403, "Forbidden");
-      req.user = user as User;
+      req.user = user as User & { id: number };
       next();
     }
   );
