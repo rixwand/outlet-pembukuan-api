@@ -23,3 +23,5 @@ export const updateValidation = joi.object({
     })
     .optional(),
 });
+
+export const idValidation = joi.number().integer().positive().required();
