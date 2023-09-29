@@ -5,7 +5,8 @@ export const paramsMiddleware: RouterHandler<void, { id: string | number }> = (
   res,
   next
 ) => {
-  if (req.params && req.params.id && !isNaN(Number(req.params.id)))
-    req.params.id = Number(req.params.id);
+  if (req.params && req.params.id && !isNaN(Number(req.params.id))) {
+    req.params.id = parseInt(req.params.id as string);
+  }
   next();
 };

@@ -4,21 +4,19 @@ import { db } from "../../src/app/db";
 import bcrypt from "bcrypt";
 import web from "../../src/app/web";
 
-export const removeUser = async (
-  email: string = "test@gmail.com"
-): Promise<void> => {
+export const removeUser = async (name: string = "test"): Promise<void> => {
   await db.user.deleteMany({
     where: {
-      email,
+      email: `${name}@gmail.com`,
     },
   });
 };
 
-export const addUser = async (): Promise<void> => {
+export const addUser = async (name: string = "test"): Promise<void> => {
   await db.user.create({
     data: {
-      username: "test",
-      email: "test@gmail.com",
+      username: name,
+      email: `${name}@gmail.com`,
       password: await bcrypt.hash("test", 10),
     },
   });
@@ -39,14 +37,18 @@ export const getUser = async (): Promise<UserInfo & UserLogin> => {
   })) as UserInfo & UserLogin;
 };
 
-export const getLoginToken = async (): Promise<{
+export const getLoginToken = async (
+  name: string = "test"
+): Promise<{
   access_token: string;
   refresh_token: string;
 }> => {
-  const res = await supertest(web).post("/api/user/login").send({
-    email: "test@gmail.com",
-    password: "test",
-  });
+  const res = await supertest(web)
+    .post("/api/user/login")
+    .send({
+      email: `${name}@gmail.com`,
+      password: "test",
+    });
 
   return res.body.data;
 };

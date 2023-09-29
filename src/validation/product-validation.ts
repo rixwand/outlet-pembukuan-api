@@ -7,3 +7,11 @@ export const createProductValidation = joi.object({
   basic_price: joi.number().required().positive().integer(),
   selling_price: joi.number().required().positive().integer(),
 });
+
+export const updateProductValidation = joi.object({
+  name: joi.string().optional().max(100),
+  category_id: joi.number().optional().positive().min(1).integer(),
+  stock: joi.number().optional().positive().integer(),
+  basic_price: joi.number().optional().positive().integer(),
+  selling_price: joi.number().optional().positive().integer(),
+});

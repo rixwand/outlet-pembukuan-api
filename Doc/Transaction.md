@@ -12,8 +12,11 @@ Request Body :
 
 ```json
 {
-  "product_id": "string",
-  "piutang": "boolean"
+  "name": "string",
+  "category": "string",
+  "basic_price": "number",
+  "selling_price": "number",
+  "receivable": "string"
 }
 ```
 
@@ -22,7 +25,13 @@ Response Body Success:
 ```json
 {
   "data": {
-    "product_id": "int"
+    "id": "int",
+    "name": "string",
+    "category": "string",
+    "basic_price": "number",
+    "selling_price": "number",
+    "receivable": "string",
+    "created_at": "string"
   }
 }
 ```
@@ -47,7 +56,7 @@ Request Body :
 
 ```json
 {
-  "jenis": "string",
+  "name": "string",
   "total": "number"
 }
 ```
@@ -57,6 +66,7 @@ Response Body Success:
 ```json
 {
   "data": {
+    "id": "string",
     "jenis": "string",
     "total": "number"
   }
@@ -91,13 +101,15 @@ Response Body Success:
         "category": "string",
         "harga_dasar": "number",
         "harga_jual": "number",
-        "type": "penjualan"
+        "type": "penjualan",
+        "created_at": "timestamp"
       },
       {
         "id": "number",
         "jenis": "string",
         "total": "number",
-        "type": "pengeluaran"
+        "type": "pengeluaran",
+        "created_at": "timestamp"
       }
     ]
   }
@@ -164,7 +176,7 @@ Response Body Error :
 }
 ```
 
-## Update Transaction
+## Update Expense
 
 Endpoint : PUT /transaction/:type/:id
 

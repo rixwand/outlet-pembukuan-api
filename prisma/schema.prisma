@@ -20,7 +20,7 @@ model User {
   sale Sale[]
   expense Expense[]
   note Note[]
-  category Categeory[]
+  category Category[]
 
   @@map("users")
 }
@@ -33,13 +33,12 @@ model Product {
   selling_price Int
   user_id Int
   category_id Int
-  category Categeory @relation(fields: [category_id], references: [id])
+  category Category @relation(fields: [category_id], references: [id])
   user User @relation(fields: [user_id], references: [id])
-  sale Sale[]
   @@map("products")
 }
 
-model Categeory {
+model Category {
   id Int @id @default(autoincrement())
   name String @db.VarChar(100)
   product Product[]
@@ -51,11 +50,13 @@ model Categeory {
 
 model Sale {
   id Int @id @default(autoincrement())
-  created_at DateTime @default(now())
+  name String @db.VarChar(100)
+  basic_price Int
+  selling_price Int
+  category String @db.VarChar(100)
   receivable Boolean @default(false)
-  prodcut_id Int
+  created_at DateTime @default(now())
   user_id Int
-  product Product @relation(fields: [prodcut_id], references: [id])
   user User @relation(fields: [user_id], references: [id])
 
   @@map("sales")
