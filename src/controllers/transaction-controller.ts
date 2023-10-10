@@ -110,7 +110,13 @@ const listTransaction: RouterHandler<
   {},
   {},
   {},
-  { search: string; type: string; time: Array<Date> }
+  {
+    search: string;
+    type: string;
+    time: Array<Date>;
+    debt: boolean;
+    receivable: boolean;
+  }
 > = async (req, res, next) => {
   try {
     const transactions = await transactionSerivce.listTransaction(req);

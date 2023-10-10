@@ -37,12 +37,7 @@ export const getUser = async (): Promise<UserInfo & UserLogin> => {
   })) as UserInfo & UserLogin;
 };
 
-export const getLoginToken = async (
-  name: string = "test"
-): Promise<{
-  access_token: string;
-  refresh_token: string;
-}> => {
+export const getLoginToken = async (name: string = "test"): Promise<string> => {
   const res = await supertest(web)
     .post("/api/user/login")
     .send({
@@ -50,7 +45,7 @@ export const getLoginToken = async (
       password: "test",
     });
 
-  return res.body.data;
+  return res.body.data.access_token;
 };
 
 export const sleep = async (sec: number): Promise<void> => {

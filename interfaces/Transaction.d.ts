@@ -18,5 +18,6 @@ export interface Expense<T = number | undefined> {
   id: T;
   name: string;
   total: number;
+  debt?: boolean;
   user_id?: number;
 }

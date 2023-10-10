@@ -26,7 +26,7 @@ userRoute.delete(
 
 // product routes
 userRoute.post("/api/product", productController.create);
-userRoute.get("/api/product", productController.list);
+userRoute.get("/api/product/list", productController.list);
 userRoute.get("/api/product/:id", paramsMiddleware, productController.get);
 userRoute.patch("/api/product/:id", paramsMiddleware, productController.update);
 userRoute.delete(

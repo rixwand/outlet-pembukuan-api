@@ -11,24 +11,21 @@ import { params } from "../../interfaces/RouterHandler";
 import { isProductExist } from "../helper/product-helper";
 import { idValidation } from "../validation/user-validation";
 
-const isCategoryExist = async (category_id: number) => {
-  return (
-    (await db.category.count({
-      where: {
-        id: category_id,
-      },
-    })) != 0
-  );
+const isCategoryExist = async (category_id: number, user_id: number) => {
+  const count = await db.category.count({
+    where: {
+      id: category_id,
+      user_id,
+    },
+  });
+  if (count == 0) throw new ResponseError(404, "Category not found");
 };
 
 const create = async (req: Request) => {
   const product: Product<user_id> = validate(createProductValidation, req.body);
   const user = req.user;
   product.user_id = user.id;
-
-  if (!(await isCategoryExist(product.category_id)))
-    throw new ResponseError(404, "Category not found");
-
+  await isCategoryExist(product.category_id, user.id);
   return await db.product.create({
     data: product,
     select: {
@@ -85,10 +82,11 @@ const list = async (
 
 const update = async (req: Request<params>) => {
   const product_id = validate(idValidation, req.params.id);
-  const product = validate(updateProductValidation, req.body);
+  const product: Product = validate(updateProductValidation, req.body);
   const user = req.user;
   await isProductExist(user.id, product_id);
-  await db.product.update({
+  if (product.category_id) await isCategoryExist(product.category_id, user.id);
+  return db.product.update({
     where: {
       id: product_id,
       user_id: user.id,

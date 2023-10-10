@@ -1,6 +1,7 @@
 import { UserLogin, User } from "../../interfaces/User.d";
 import { db } from "../app/db";
 import { ResponseError } from "../errors/response-error";
+import { generateAccessToken } from "../helper/auth-helper";
 import {
   getUserValidation,
   loginValidation,
@@ -71,13 +72,9 @@ const login = async (
   const isValid = await bcrypt.compare(userLogin.password, user.password);
   if (!isValid) throw new ResponseError(401, "wrong email or password");
 
-  const access_token = jwt.sign(
-    { id: user.id, username: user.username, email: user.email },
-    process.env.ACCESS_TOKEN_SECRETKEY as string,
-    { expiresIn: 60 * 30 }
-  );
+  const access_token = generateAccessToken(user.id, user.username, user.email);
   const refresh_token = jwt.sign(
-    { username: user.username, email: user.email },
+    { id: user.id, username: user.username, email: user.email },
     process.env.REFRESH_TOKEN_SECRETKEY as string
   );
 

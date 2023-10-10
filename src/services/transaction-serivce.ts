@@ -41,7 +41,7 @@ const isExpenseExist = async (user_id: number, expens_id: number) => {
 
 const isDateInvalid = (dates: Date[]) => {
   dates.forEach((date) => {
-    if (isNaN(date.getTime()))
+    if (isNaN(new Date(date).getTime()))
       throw new ResponseError(422, "query parameter time is invalid");
   });
 };
@@ -67,7 +67,7 @@ const getSale = async (req: Request<params>) => {
   const sale_id = validate(idValidation, req.params.id);
   const user_id = req.user.id;
   await isSaleExist(user_id, sale_id);
-  return db.sale.findUnique({
+  const sale = await db.sale.findUnique({
     where: {
       id: sale_id,
       user_id,
@@ -78,9 +78,11 @@ const getSale = async (req: Request<params>) => {
       category: true,
       basic_price: true,
       selling_price: true,
+      receivable: true,
       created_at: true,
     },
   });
+  return { ...sale, type: "sale" };
 };
 
 const createExpense = async (req: Request<{}, {}, Expense>) => {
@@ -91,6 +93,7 @@ const createExpense = async (req: Request<{}, {}, Expense>) => {
     select: {
       id: true,
       name: true,
+      debt: true,
       total: true,
     },
   });
@@ -110,6 +113,7 @@ const getExpense = async (req: Request<params>) => {
       id: true,
       name: true,
       total: true,
+      debt: true,
       created_at: true,
     },
   });
@@ -133,6 +137,7 @@ const updateSale = async (req: Request<params, {}, Sale>) => {
       category: true,
       basic_price: true,
       selling_price: true,
+      receivable: true,
       created_at: true,
     },
   });
@@ -154,6 +159,7 @@ const updateExpense = async (req: Request<params, {}, Expense>) => {
       id: true,
       name: true,
       total: true,
+      debt: true,
       created_at: true,
     },
   });
@@ -187,44 +193,76 @@ const removeExpense = async (req: Request<params>) => {
 };
 
 const listTransaction = async (
-  req: Request<{}, {}, {}, { search: string; type: string; time: Array<Date> }>
+  req: Request<
+    {},
+    {},
+    {},
+    {
+      search: string;
+      type: string;
+      debt: boolean;
+      receivable: boolean;
+      time: Array<Date>;
+    }
+  >
 ) => {
-  const { search, type, time } = validate(listTransactionValdiation, req.query);
-  const filter: Prisma.SaleWhereInput | Prisma.ExpenseWhereInput = {};
+  console.log(req.query.time);
+  const { search, type, time, debt, receivable } = validate(
+    listTransactionValdiation,
+    req.query
+  );
+  let filter: Prisma.SaleWhereInput | Prisma.ExpenseWhereInput = {};
   if (time) {
     isDateInvalid(time);
-    const gte = time[0].toISOString();
-    const lte = time[1].toISOString();
-    filter.OR!.push(
-      {
-        created_at: {
-          gte,
+    const gte = new Date(time[0]).toISOString();
+    const lte = new Date(time[1]).toISOString();
+    filter = {
+      AND: [
+        {
+          created_at: {
+            gte,
+          },
         },
-      },
-      {
-        created_at: {
-          lte,
+        {
+          created_at: {
+            lte,
+          },
         },
-      }
-    );
+      ],
+    };
   } else {
     const today = new Date();
     filter.created_at = {
-      gte: new Date(today.setDate(today.getDate())).toISOString(),
+      gte: new Date(today.toLocaleDateString()).toISOString(),
     };
-  }
-
-  if (search) {
-    filter.OR?.push({ name: { contains: search } });
   }
 
   let transaction: Array<Sale<user_id> | Expense<user_id>> = new Array();
   if (!type || type == "sale") {
+    let saleFilter = { ...filter };
     if (search) {
-      filter.OR?.push({ category: { contains: search } });
+      saleFilter = {
+        AND: [
+          {
+            OR: [
+              { category: { contains: search } },
+              { name: { contains: search } },
+            ],
+          },
+          filter as Prisma.SaleWhereInput,
+        ],
+      };
+    }
+    if (receivable != undefined) {
+      saleFilter = {
+        AND: [
+          { receivable },
+          { AND: saleFilter.AND as Prisma.SaleWhereInput[] },
+        ],
+      };
     }
     const sales: Sale<user_id>[] = await db.sale.findMany({
-      where: filter as Prisma.SaleWhereInput,
+      where: saleFilter as Prisma.SaleWhereInput,
       select: {
         id: true,
         name: true,
@@ -238,12 +276,27 @@ const listTransaction = async (
     transaction.push(...sales);
   }
   if (!type || type == "expense") {
+    let expenseFilter = { ...filter };
+    if (search) {
+      expenseFilter = {
+        AND: [
+          { name: { contains: search } },
+          filter as Prisma.ExpenseWhereInput,
+        ],
+      };
+    }
+    if (debt != undefined) {
+      expenseFilter = {
+        AND: [{ debt }, { AND: filter.AND as Prisma.ExpenseWhereInput }],
+      };
+    }
     const expenses: Expense<user_id>[] = await db.expense.findMany({
-      where: filter as Prisma.ExpenseWhereInput,
+      where: expenseFilter as Prisma.ExpenseWhereInput,
       select: {
         id: true,
         name: true,
         total: true,
+        debt: true,
         created_at: true,
       },
     });

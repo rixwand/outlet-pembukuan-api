@@ -12,7 +12,7 @@ let access_token: string;
 describe("POST /api/category", () => {
   beforeEach(async () => {
     await addUser();
-    access_token = (await getLoginToken()).access_token;
+    access_token = await getLoginToken();
   });
   afterEach(async () => {
     await removeTestCategory();
@@ -61,9 +61,8 @@ let idCategory: number;
 describe("PUT /api/category/:id", () => {
   beforeEach(async () => {
     await addUser();
-    access_token = (await getLoginToken()).access_token;
-    idCategory = (await createTestCategory(access_token)).body.data
-      .id as number;
+    access_token = await getLoginToken();
+    idCategory = await createTestCategory(access_token);
   });
   afterEach(async () => {
     await removeTestCategory();
@@ -100,9 +99,8 @@ describe("PUT /api/category/:id", () => {
 describe("DELETE /api/category/:id", () => {
   beforeEach(async () => {
     await addUser();
-    access_token = (await getLoginToken()).access_token;
-    idCategory = (await createTestCategory(access_token)).body.data
-      .id as number;
+    access_token = await getLoginToken();
+    idCategory = await createTestCategory(access_token);
   });
   afterEach(async () => {
     await removeTestCategory();
@@ -133,7 +131,7 @@ describe("DELETE /api/category/:id", () => {
 describe("GET /api/category", () => {
   beforeEach(async () => {
     await addUser();
-    access_token = (await getLoginToken()).access_token;
+    access_token = await getLoginToken();
   });
   afterEach(async () => {
     await removeTestCategory();

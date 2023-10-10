@@ -33,5 +33,5 @@ export const createTestCategory = async (
     .set("Authorization", "Bearer " + access_token)
     .send({ name });
 
-  return res;
+  return res.body.data.id;
 };

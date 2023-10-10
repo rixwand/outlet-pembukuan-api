@@ -112,7 +112,7 @@ describe("DELETE /api/user/logout", () => {
   });
 
   it("should can logout user", async () => {
-    const { access_token } = await getLoginToken();
+    const access_token = await getLoginToken();
     const { token: refresh_token_login } = await getUser();
     await supertest(web)
       .delete("/api/user/logout")
@@ -138,8 +138,8 @@ describe("DELETE /api/user/logout", () => {
       .delete("/api/user/logout")
       .set("authorization", "Bearer " + "access_token");
     const { token: refresh_token_logout } = await getUser();
-    expect(res.status).toBe(403);
-    expect(res.body.error).toBe("Forbidden");
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe("Unauthorized");
     expect(refresh_token_login).toBeDefined;
     expect(refresh_token_logout).toBeDefined;
   });
@@ -154,7 +154,7 @@ describe("GET /api/user/current", () => {
   });
 
   it("should can get data user", async () => {
-    const { access_token } = await getLoginToken();
+    const access_token = await getLoginToken();
     const res = await supertest(web)
       .get("/api/user/current")
       .set("authorization", "Bearer " + access_token);
@@ -165,7 +165,7 @@ describe("GET /api/user/current", () => {
   });
 
   test.skip("should reject get data user with expired access token", async () => {
-    const { access_token } = await getLoginToken();
+    const access_token = await getLoginToken();
     await sleep(6);
     const res = await supertest(web)
       .get("/api/user/current")
@@ -181,11 +181,11 @@ describe("PATCH /api/user/current", () => {
   });
   afterEach(async () => {
     await removeUser();
-    removeUser("rixwand@gmail.com");
+    await removeUser("rixwand");
   });
 
   it("should can update user name", async () => {
-    const { access_token } = await getLoginToken();
+    const access_token = await getLoginToken();
     const user_before_update = await getUser();
     await sleep(2);
     const res = await supertest(web)
@@ -203,20 +203,20 @@ describe("PATCH /api/user/current", () => {
   });
 
   it("should can update user email", async () => {
-    const { access_token } = await getLoginToken();
+    const access_token = await getLoginToken();
     const res = await supertest(web)
       .patch("/api/user/current")
       .send({
         email: "rixwand@gmail.com",
       })
       .set("authorization", "Bearer " + access_token);
-
+    console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body.data.email).toBe("rixwand@gmail.com");
   });
 
   it("should can update user password", async () => {
-    const { access_token } = await getLoginToken();
+    const access_token = await getLoginToken();
 
     const res = await supertest(web)
       .patch("/api/user/current")
@@ -231,7 +231,7 @@ describe("PATCH /api/user/current", () => {
   });
 
   it("should reject update user password with wrong old password", async () => {
-    const { access_token } = await getLoginToken();
+    const access_token = await getLoginToken();
 
     const res = await supertest(web)
       .patch("/api/user/current")
