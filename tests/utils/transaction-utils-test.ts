@@ -3,6 +3,12 @@ import { db } from "../../src/app/db";
 import web from "../../src/app/web";
 import { randomInt } from "./product-test-utils";
 
+const currAset = {
+  note: "test",
+  total: 12000,
+  paid: false,
+};
+
 export const removeTransactionSaleTest = async (name: string = "test") => {
   await db.sale.deleteMany({
     where: { name: { contains: name } },
@@ -15,7 +21,7 @@ export const removeTransactionExpenseTest = async (name: string = "test") => {
   });
 };
 
-export const createSaleTransactionTest = async (
+export const createSaleTestWithReceivable = async (
   access_token: string,
   name: string = "test"
 ) => {
@@ -27,12 +33,32 @@ export const createSaleTransactionTest = async (
       category: "test",
       basic_price: 10000,
       selling_price: 12000,
-      receivable: true,
+      receivable: {
+        total: 12000,
+        note: "test receivable",
+        paid: false,
+      },
     });
   return res.body.data.id;
 };
 
-export const createExpenseTransactionTest = async (
+export const createSaleTestWithoutReceivable = async (
+  access_token: string,
+  name: string = "test"
+) => {
+  const res = await supertest(web)
+    .post("/api/transaction/sale")
+    .set("Authorization", "Bearer " + access_token)
+    .send({
+      name: "product " + name,
+      category: "test",
+      basic_price: 10000,
+      selling_price: 12000,
+    });
+  return res.body.data.id;
+};
+
+export const createExpenseTestWithDebt = async (
   access_token: string,
   name: string = "test"
 ) => {
@@ -42,7 +68,25 @@ export const createExpenseTransactionTest = async (
     .send({
       name,
       total: 20000,
-      debt: true,
+      debt: {
+        total: 20000,
+        note: "test receivable",
+        paid: false,
+      },
+    });
+  return res.body.data.id;
+};
+
+export const createExpenseTestWithoutDebt = async (
+  access_token: string,
+  name: string = "test"
+) => {
+  const res = await supertest(web)
+    .post("/api/transaction/expense")
+    .set("Authorization", "Bearer " + access_token)
+    .send({
+      name,
+      total: 20000,
     });
   return res.body.data.id;
 };
@@ -83,7 +127,7 @@ export const generateTransactionTest = async (access_token: string) => {
         category = "Kartu";
         break;
     }
-    await supertest(web)
+    const res = await supertest(web)
       .post("/api/transaction/sale")
       .set("Authorization", "Bearer " + access_token)
       .send({
@@ -91,20 +135,22 @@ export const generateTransactionTest = async (access_token: string) => {
         category,
         basic_price: randomInt(10000, 15000),
         selling_price: randomInt(15000, 20000),
-        receivable: i % 2 == 0 ? true : false,
-        created_at: new Date(date.setDate(i)),
+        receivable: i % 2 == 0 ? currAset : null,
+        created_at: new Date("10-" + i + "-2023"),
       });
+    console.log(res.status, res.body);
   }
 
   for (let i = 6; i <= 10; i++) {
-    await supertest(web)
+    const res = await supertest(web)
       .post("/api/transaction/expense")
       .set("Authorization", "Bearer " + access_token)
       .send({
         name: "expense test " + i,
         total: randomInt(15000, 20000),
-        debt: i % 2 == 0 ? true : false,
-        created_at: new Date(date.setDate(i)),
+        debt: i % 2 == 0 ? currAset : null,
+        created_at: new Date("10-" + i + "-2023"),
       });
+    console.log(res.status, res.body);
   }
 };

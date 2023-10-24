@@ -7,58 +7,107 @@ import {
   updateExpenseValidation,
   updateSaleValidation,
 } from "../validation/transaction-validation";
-import { Expense, Sale } from "../../interfaces/Transaction";
+import { Debt, Expense, Receivable, Sale } from "../../interfaces/Transaction";
 import { ResponseError } from "../errors/response-error";
 import { db } from "../app/db";
 import { params } from "../../interfaces/RouterHandler";
 import { idValidation } from "../validation/user-validation";
-import {
-  Prisma,
-  Sale as prismaSale,
-  Expense as prismaExpense,
-} from "prisma/prisma-client";
+import { Prisma } from "prisma/prisma-client";
 import { user_id } from "../../interfaces/Product";
+import { isDateInvalid } from "../helper/validation-helper";
 
-const isSaleExist = async (user_id: number, sale_id: number) => {
-  const count = await db.sale.count({
+const returnValue: Prisma.SaleSelect = {
+  id: true,
+  name: true,
+  category: true,
+  basic_price: true,
+  selling_price: true,
+  created_at: true,
+  receivable: {
+    select: {
+      total: true,
+      note: true,
+      paid: true,
+    },
+  },
+};
+
+const expenseReturnValue: Prisma.ExpenseSelect = {
+  id: true,
+  name: true,
+  total: true,
+  debt: {
+    select: {
+      total: true,
+      note: true,
+      paid: true,
+    },
+  },
+  created_at: true,
+};
+
+export const isSaleExist = async (user_id: number, sale_id: number) => {
+  const count = await db.sale.findFirst({
     where: {
       id: sale_id,
       user_id,
     },
+    select: {
+      receivable: {
+        select: {
+          id: true,
+        },
+      },
+    },
   });
-  if (count == 0) throw new ResponseError(404, "Transaction not found");
+  if (!count) throw new ResponseError(404, "Transaction not found");
+  return count.receivable;
 };
 
-const isExpenseExist = async (user_id: number, expens_id: number) => {
-  const count = await db.expense.count({
+export const isExpenseExist = async (user_id: number, expens_id: number) => {
+  const count = await db.expense.findFirst({
     where: {
       id: expens_id,
       user_id,
     },
+    select: {
+      debt: {
+        select: {
+          id: true,
+        },
+      },
+    },
   });
-  if (count == 0) throw new ResponseError(404, "Transaction not found");
+  if (!count) throw new ResponseError(404, "Transaction not found");
+  return count.debt;
 };
 
-const isDateInvalid = (dates: Date[]) => {
-  dates.forEach((date) => {
-    if (isNaN(new Date(date).getTime()))
-      throw new ResponseError(422, "query parameter time is invalid");
-  });
-};
+// Sale Transaction
 const createSale = async (req: Request) => {
-  const sale: Sale = validate(createSaleValidation, req.body);
+  const { receivable, ...sale } = validate(createSaleValidation, req.body);
   const user_id = req.user.id;
   sale.user_id = user_id;
-  const productSale = await db.sale.create({
+  const createSale = await db.sale.create({
     data: sale as any,
     select: {
       id: true,
-      name: true,
-      category: true,
-      basic_price: true,
-      selling_price: true,
-      created_at: true,
     },
+  });
+  if (receivable) {
+    await db.receivable.create({
+      data: {
+        ...receivable,
+        user_id,
+        sale_id: createSale.id,
+      },
+    });
+  }
+  const productSale = await db.sale.findUnique({
+    where: {
+      id: createSale.id,
+      user_id,
+    },
+    select: returnValue,
   });
   return { ...productSale, type: "sale" };
 };
@@ -72,51 +121,9 @@ const getSale = async (req: Request<params>) => {
       id: sale_id,
       user_id,
     },
-    select: {
-      id: true,
-      name: true,
-      category: true,
-      basic_price: true,
-      selling_price: true,
-      receivable: true,
-      created_at: true,
-    },
+    select: returnValue,
   });
   return { ...sale, type: "sale" };
-};
-
-const createExpense = async (req: Request<{}, {}, Expense>) => {
-  const expense = validate(createExpenseValidation, req.body);
-  expense.user_id = req.user.id;
-  const result = await db.expense.create({
-    data: expense as any,
-    select: {
-      id: true,
-      name: true,
-      debt: true,
-      total: true,
-    },
-  });
-  return { ...result, type: "expense" };
-};
-
-const getExpense = async (req: Request<params>) => {
-  const expense_id = validate(idValidation, req.params.id);
-  const user_id = req.user.id;
-  await isExpenseExist(user_id, expense_id);
-  return db.expense.findUnique({
-    where: {
-      id: expense_id,
-      user_id,
-    },
-    select: {
-      id: true,
-      name: true,
-      total: true,
-      debt: true,
-      created_at: true,
-    },
-  });
 };
 
 const updateSale = async (req: Request<params, {}, Sale>) => {
@@ -131,17 +138,76 @@ const updateSale = async (req: Request<params, {}, Sale>) => {
       id: sale_id,
       user_id,
     },
-    select: {
-      id: true,
-      name: true,
-      category: true,
-      basic_price: true,
-      selling_price: true,
-      receivable: true,
-      created_at: true,
-    },
+    select: returnValue,
   });
   return { ...sale, type: "sale" };
+};
+
+const removeSale = async (req: Request<params>) => {
+  const sale_id = validate(idValidation, req.params.id);
+  const user_id = req.user.id;
+  const hasReceivable = await isSaleExist(user_id, sale_id);
+  if (hasReceivable) {
+    await db.receivable.delete({
+      where: {
+        id: hasReceivable?.id,
+        user_id,
+      },
+    });
+  }
+  return db.sale.delete({
+    where: {
+      id: sale_id,
+      user_id,
+    },
+    select: { id: true },
+  });
+};
+
+// Expense transaction
+const createExpense = async (
+  req: Request<{}, {}, Expense<undefined, Debt>>
+) => {
+  const { debt, ...expense } = validate(createExpenseValidation, req.body);
+  const user_id = req.user.id;
+  expense.user_id = user_id;
+  const resultExpense = await db.expense.create({
+    data: expense as any,
+    select: {
+      id: true,
+    },
+  });
+  if (debt) {
+    await db.debt.create({
+      data: {
+        ...debt,
+        user_id,
+        expense_id: resultExpense.id,
+      },
+    });
+  }
+
+  const result = await db.expense.findUnique({
+    where: {
+      id: resultExpense.id,
+      user_id,
+    },
+    select: expenseReturnValue,
+  });
+  return { ...result, type: "expense" };
+};
+
+const getExpense = async (req: Request<params>) => {
+  const expense_id = validate(idValidation, req.params.id);
+  const user_id = req.user.id;
+  await isExpenseExist(user_id, expense_id);
+  return db.expense.findUnique({
+    where: {
+      id: expense_id,
+      user_id,
+    },
+    select: expenseReturnValue,
+  });
 };
 
 const updateExpense = async (req: Request<params, {}, Expense>) => {
@@ -155,34 +221,23 @@ const updateExpense = async (req: Request<params, {}, Expense>) => {
       id: expense_id,
       user_id,
     },
-    select: {
-      id: true,
-      name: true,
-      total: true,
-      debt: true,
-      created_at: true,
-    },
+    select: expenseReturnValue,
   });
   return { ...expense, type: "expense" };
-};
-
-const removeSale = async (req: Request<params>) => {
-  const sale_id = validate(idValidation, req.params.id);
-  const user_id = req.user.id;
-  await isSaleExist(user_id, sale_id);
-  return db.sale.delete({
-    where: {
-      id: sale_id,
-      user_id,
-    },
-    select: { id: true },
-  });
 };
 
 const removeExpense = async (req: Request<params>) => {
   const sale_id = validate(idValidation, req.params.id);
   const user_id = req.user.id;
-  await isExpenseExist(user_id, sale_id);
+  const hasDebt = await isExpenseExist(user_id, sale_id);
+  if (hasDebt) {
+    await db.debt.delete({
+      where: {
+        id: hasDebt?.id,
+        user_id,
+      },
+    });
+  }
   return db.expense.delete({
     where: {
       id: sale_id,
@@ -192,6 +247,7 @@ const removeExpense = async (req: Request<params>) => {
   });
 };
 
+// List transaction
 const listTransaction = async (
   req: Request<
     {},
@@ -200,17 +256,12 @@ const listTransaction = async (
     {
       search: string;
       type: string;
-      debt: boolean;
-      receivable: boolean;
       time: Array<Date>;
     }
   >
 ) => {
   console.log(req.query.time);
-  const { search, type, time, debt, receivable } = validate(
-    listTransactionValdiation,
-    req.query
-  );
+  const { search, type, time } = validate(listTransactionValdiation, req.query);
   let filter: Prisma.SaleWhereInput | Prisma.ExpenseWhereInput = {};
   if (time) {
     isDateInvalid(time);
@@ -237,7 +288,8 @@ const listTransaction = async (
     };
   }
 
-  let transaction: Array<Sale<user_id> | Expense<user_id>> = new Array();
+  let transaction = new Array();
+
   if (!type || type == "sale") {
     let saleFilter = { ...filter };
     if (search) {
@@ -253,26 +305,11 @@ const listTransaction = async (
         ],
       };
     }
-    if (receivable != undefined) {
-      saleFilter = {
-        AND: [
-          { receivable },
-          { AND: saleFilter.AND as Prisma.SaleWhereInput[] },
-        ],
-      };
-    }
-    const sales: Sale<user_id>[] = await db.sale.findMany({
-      where: saleFilter as Prisma.SaleWhereInput,
-      select: {
-        id: true,
-        name: true,
-        category: true,
-        receivable: true,
-        basic_price: true,
-        selling_price: true,
-        created_at: true,
-      },
-    });
+    const sales: Array<Sale<user_id, Receivable | null>> =
+      await db.sale.findMany({
+        where: saleFilter as Prisma.SaleWhereInput,
+        select: returnValue,
+      });
     transaction.push(...sales);
   }
   if (!type || type == "expense") {
@@ -285,21 +322,12 @@ const listTransaction = async (
         ],
       };
     }
-    if (debt != undefined) {
-      expenseFilter = {
-        AND: [{ debt }, { AND: filter.AND as Prisma.ExpenseWhereInput }],
-      };
-    }
-    const expenses: Expense<user_id>[] = await db.expense.findMany({
-      where: expenseFilter as Prisma.ExpenseWhereInput,
-      select: {
-        id: true,
-        name: true,
-        total: true,
-        debt: true,
-        created_at: true,
-      },
-    });
+    const expenses: Expense<user_id, Debt | null>[] = await db.expense.findMany(
+      {
+        where: expenseFilter as Prisma.ExpenseWhereInput,
+        select: expenseReturnValue,
+      }
+    );
     transaction.push(...expenses);
   }
   return transaction;

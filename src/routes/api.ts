@@ -5,6 +5,8 @@ import { paramsMiddleware } from "../middleware/params-middleware";
 import categoryController from "../controllers/category-controller";
 import productController from "../controllers/product-controller";
 import transactionController from "../controllers/transaction-controller";
+import debtController from "../controllers/debt-controller";
+import receivableController from "../controllers/receivable-controller";
 
 const userRoute = Router();
 userRoute.use(authMiddleware);
@@ -69,4 +71,31 @@ userRoute.patch(
   transactionController.updateExpense
 );
 userRoute.get("/api/transaction", transactionController.listTransaction);
+
+// debt transaction
+userRoute.post("/api/debt", debtController.create);
+userRoute.get("/api/debt/:id", paramsMiddleware, debtController.get);
+userRoute.patch("/api/debt/:id", paramsMiddleware, debtController.update);
+userRoute.delete("/api/debt/:id", paramsMiddleware, debtController.remove);
+userRoute.get("/api/debt", debtController.list);
+
+// receivable transaction
+userRoute.post("/api/receivable", receivableController.create);
+userRoute.get(
+  "/api/receivable/:id",
+  paramsMiddleware,
+  receivableController.get
+);
+userRoute.patch(
+  "/api/receivable/:id",
+  paramsMiddleware,
+  receivableController.update
+);
+userRoute.delete(
+  "/api/receivable/:id",
+  paramsMiddleware,
+  receivableController.remove
+);
+userRoute.get("/api/receivable", receivableController.list);
+
 export default userRoute;
