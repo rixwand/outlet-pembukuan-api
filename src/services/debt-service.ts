@@ -12,6 +12,7 @@ import { idValidation } from "../validation/user-validation";
 import { validate } from "../validation/validation";
 import { isDateInvalid } from "../helper/validation-helper";
 import { isExpenseExist } from "./transaction-serivce";
+import days from "../app/time";
 
 const isDebtExist = async (user_id: number, debt_id: number) => {
   const count = await db.debt.count({
@@ -97,8 +98,8 @@ const list = async (user: UserInfo, query: ListQuery) => {
   let filter: Prisma.DebtWhereInput = {};
   if (time) {
     isDateInvalid(time);
-    const gte = new Date(time[0]).toISOString();
-    const lte = new Date(time[1]).toISOString();
+    const gte = days(time[0], "DD-MM-YYYY").toISOString();
+    const lte = days(time[1], "DD-MM-YYYY").toISOString();
     filter = {
       AND: [
         {
@@ -109,6 +110,23 @@ const list = async (user: UserInfo, query: ListQuery) => {
         {
           created_at: {
             lte,
+          },
+        },
+      ],
+    };
+  } else if (!search) {
+    const firstday = days().startOf("week").toISOString();
+    const lastday = days().endOf("week").toISOString();
+    filter = {
+      AND: [
+        {
+          created_at: {
+            gte: firstday,
+          },
+        },
+        {
+          created_at: {
+            lte: lastday,
           },
         },
       ],

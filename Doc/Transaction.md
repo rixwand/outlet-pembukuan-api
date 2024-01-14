@@ -16,7 +16,12 @@ Request Body :
   "category": "string",
   "basic_price": "number",
   "selling_price": "number",
-  "receivable": "string"
+  // optional
+  "receivable": {
+    "note": "string",
+    "total": "number",
+    "paid": "boolean" //default False
+  }
 }
 ```
 
@@ -30,8 +35,13 @@ Response Body Success:
     "category": "string",
     "basic_price": "number",
     "selling_price": "number",
-    "receivable": "string",
-    "created_at": "string"
+    "created_at": "string",
+    // optional
+    "receivable": {
+      "total": "number",
+      "note": "string",
+      "paid": "boolean"
+    }
   }
 }
 ```
@@ -57,7 +67,13 @@ Request Body :
 ```json
 {
   "name": "string",
-  "total": "number"
+  "total": "number",
+  // optional
+  "debt": {
+    "total": "number",
+    "note": "string",
+    "paid": "boolean" //default false
+  }
 }
 ```
 
@@ -67,8 +83,15 @@ Response Body Success:
 {
   "data": {
     "id": "string",
-    "jenis": "string",
-    "total": "number"
+    "name": "string",
+    "total": "number",
+    "created_at": "string",
+    // optional
+    "debt": {
+      "total": "number",
+      "note": "string",
+      "paid": "boolean"
+    }
   }
 }
 ```
@@ -89,6 +112,12 @@ Headers :
 
 - Authorization : token
 
+Query :
+
+- Search = with transaction name & category
+- Type = Sale Or Expense, if null get both transaction
+- Time = transaction beetwen time, default today
+
 Response Body Success:
 
 ```json
@@ -102,6 +131,11 @@ Response Body Success:
         "harga_dasar": "number",
         "harga_jual": "number",
         "type": "penjualan",
+        "receivable": {
+          "total": "number",
+          "note": "string",
+          "paid": "boolean"
+        }, // Or Null
         "created_at": "timestamp"
       },
       {
@@ -109,6 +143,11 @@ Response Body Success:
         "jenis": "string",
         "total": "number",
         "type": "pengeluaran",
+        "debt": {
+          "total": "number",
+          "note": "string",
+          "paid": "boolean"
+        }, // Or Null
         "created_at": "timestamp"
       }
     ]
@@ -124,9 +163,9 @@ Response Body Error :
 }
 ```
 
-## Get Transaction API
+## Get transaction
 
-Endpoint : DELETE /transaction/:type/:id
+Endpoint : Get /transaction/:type/:id
 
 Headers :
 

@@ -1,6 +1,7 @@
 import supertest from "supertest";
 import web from "../../src/app/web";
 import { db } from "../../src/app/db";
+import days from "../../src/app/time";
 
 export const createDebtTestWithExpense = async (
   access_token: string,
@@ -58,6 +59,7 @@ export const getDebtTest = async (id: number) => {
 };
 
 export const generateDebtTest = async (access_token: string) => {
+  const firstday = days().startOf("week");
   for (let i = 1; i <= 10; i++) {
     await supertest(web)
       .post("/api/debt")
@@ -66,7 +68,9 @@ export const generateDebtTest = async (access_token: string) => {
         note: "test " + i,
         total: i * 10000,
         paid: i % 2 == 0 ? false : true,
-        created_at: new Date("10-" + i + "-2023"),
+        created_at: firstday
+          .set("date", firstday.get("date") + i - 1)
+          .toISOString(),
       });
   }
 };

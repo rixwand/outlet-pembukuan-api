@@ -305,11 +305,15 @@ const listTransaction = async (
         ],
       };
     }
-    const sales: Array<Sale<user_id, Receivable | null>> =
-      await db.sale.findMany({
+    let sales: Array<Sale<user_id, Receivable | null>> = await db.sale.findMany(
+      {
         where: saleFilter as Prisma.SaleWhereInput,
         select: returnValue,
-      });
+      }
+    );
+    sales = sales.map((sale: Sale<user_id, Receivable | null>) => {
+      return { ...sale, type: "sale" };
+    });
     transaction.push(...sales);
   }
   if (!type || type == "expense") {
@@ -322,12 +326,13 @@ const listTransaction = async (
         ],
       };
     }
-    const expenses: Expense<user_id, Debt | null>[] = await db.expense.findMany(
-      {
-        where: expenseFilter as Prisma.ExpenseWhereInput,
-        select: expenseReturnValue,
-      }
-    );
+    let expenses: Expense<user_id, Debt | null>[] = await db.expense.findMany({
+      where: expenseFilter as Prisma.ExpenseWhereInput,
+      select: expenseReturnValue,
+    });
+    expenses = expenses.map((expense: Expense<user_id, Debt | null>) => {
+      return { ...expense, type: "expense" };
+    });
     transaction.push(...expenses);
   }
   return transaction;

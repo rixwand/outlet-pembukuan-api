@@ -91,7 +91,7 @@ Response Body Error :
 
 ```json
 {
-  "error": "Category not found"
+  "error": "Error message"
 }
 ```
 

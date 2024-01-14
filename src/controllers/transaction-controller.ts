@@ -1,14 +1,13 @@
 import { RouterHandler, params } from "../../interfaces/RouterHandler";
 import transactionSerivce from "../services/transaction-serivce";
 import { user_id } from "../../interfaces/Product";
-import { Expense } from "../../interfaces/Transaction";
-import { Sale } from "@prisma/client";
+import { Sale, Expense, Receivable } from "../../interfaces/Transaction";
 
 const createExpense: RouterHandler<
   Promise<void>,
   {},
   {},
-  Expense<user_id>
+  Expense<undefined, Receivable>
 > = async (req, res, next) => {
   try {
     const expenses = await transactionSerivce.createExpense(req);

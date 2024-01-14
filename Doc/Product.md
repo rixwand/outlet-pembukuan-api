@@ -26,7 +26,7 @@ Response Body Success :
 {
   "id": "number",
   "name": "string",
-  "category": "string",
+  "category": { "name": "string" },
   "stock": "number",
   "basic_price": "number",
   "selling_price": "number"
@@ -61,7 +61,7 @@ Response Body Success :
     {
       "id": "number",
       "name": "string",
-      "category": "string",
+      "category": { "name": "string" },
       "stock": "number",
       "basic_price": "number",
       "selling_price": "number"
@@ -92,7 +92,9 @@ Response Body Success :
 {
   "id": "number",
   "name": "string",
-  "category": "string",
+  "category": {
+    "name": "string"
+  },
   "stock": "number",
   "basic_price": "number",
   "selling_price": "number"
@@ -134,7 +136,9 @@ Response Body Success :
 {
   "id": "number",
   "name": "string",
-  "category": "string",
+  "category": {
+    "name": "string"
+  },
   "stock": "number",
   "basic_price": "number",
   "selling_price": "number"
