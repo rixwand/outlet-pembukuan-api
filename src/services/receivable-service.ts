@@ -12,6 +12,7 @@ import { idValidation } from "../validation/user-validation";
 import { validate } from "../validation/validation";
 import { isDateInvalid } from "../helper/validation-helper";
 import { isSaleExist } from "./transaction-serivce";
+import days from "../app/time";
 
 const isReceivableExist = async (user_id: number, receivable_id: number) => {
   const count = await db.receivable.count({
@@ -104,8 +105,8 @@ const list = async (user: UserInfo, query: ListQuery) => {
   let filter: Prisma.ReceivableWhereInput = {};
   if (time) {
     isDateInvalid(time);
-    const gte = new Date(time[0]).toISOString();
-    const lte = new Date(time[1]).toISOString();
+    const gte = days(time[0], "DD-MM-YYYY").toISOString();
+    const lte = days(time[1], "DD-MM-YYYY").toISOString();
     filter = {
       AND: [
         {
@@ -125,12 +126,8 @@ const list = async (user: UserInfo, query: ListQuery) => {
       ],
     };
   } else {
-    const curr = new Date(); // get current date
-    const first = curr.getDate() - curr.getDay() + 1; // First day is the day of the month - the day of the week
-    const last = first + 6; // last day is the first day + 6
-
-    const firstday = new Date(curr.setDate(first)).toISOString();
-    const lastday = new Date(curr.setDate(last)).toLocaleTimeString();
+    const firstday = days().startOf("week").toISOString();
+    const lastday = days().endOf("week").toISOString();
     filter = {
       AND: [
         {
@@ -174,10 +171,13 @@ const list = async (user: UserInfo, query: ListQuery) => {
       ],
     };
   }
-  return db.receivable.findMany({
+  const receivable = await db.receivable.findMany({
     where: { AND: [{ user_id: user.id }, filter] },
     select: returnValue,
   });
+  if (receivable.length === 0)
+    throw new ResponseError(404, "Receivable not found");
+  else return receivable;
 };
 
 export default { create, get, update, remove, list };

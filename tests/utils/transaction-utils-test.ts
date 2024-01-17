@@ -2,6 +2,7 @@ import supertest from "supertest";
 import { db } from "../../src/app/db";
 import web from "../../src/app/web";
 import { randomInt } from "./product-test-utils";
+import days from "../../src/app/time";
 
 const currAset = {
   note: "test",
@@ -112,7 +113,7 @@ export const getExpenseTransactionTest = async (
 };
 
 export const generateTransactionTest = async (access_token: string) => {
-  const date = new Date();
+  const firstday = days().startOf("week");
   for (let i = 1; i <= 10; i++) {
     let category: string;
     const rand = randomInt(1, 3);
@@ -136,9 +137,8 @@ export const generateTransactionTest = async (access_token: string) => {
         basic_price: randomInt(10000, 15000),
         selling_price: randomInt(15000, 20000),
         receivable: i % 2 == 0 ? currAset : null,
-        created_at: new Date("10-" + i + "-2023"),
+        created_at: firstday.set("date", firstday.get("date") + i - 1),
       });
-    console.log(res.status, res.body);
   }
 
   for (let i = 6; i <= 10; i++) {
@@ -149,8 +149,7 @@ export const generateTransactionTest = async (access_token: string) => {
         name: "expense test " + i,
         total: randomInt(15000, 20000),
         debt: i % 2 == 0 ? currAset : null,
-        created_at: new Date("10-" + i + "-2023"),
+        created_at: firstday.set("date", firstday.get("date") + i - 1),
       });
-    console.log(res.status, res.body);
   }
 };

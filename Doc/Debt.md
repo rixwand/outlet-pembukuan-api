@@ -157,7 +157,7 @@ Header :
 Query :
 
 - Search = with debt notes or expense name
-- time = beetwen dates, default this week
+- time = beetwen dates, default this week, format : DD-MM-YYYY
 - paid = boolean, default get all type debt
 
 Response Body Success :

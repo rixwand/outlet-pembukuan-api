@@ -328,10 +328,9 @@ describe("GET /api/debt?filter", () => {
       .query({
         search: "test 20",
       });
-    console.log(res.body.data);
     console.log(res.body);
-    expect(res.status).toBe(200);
-    expect(res.body.data.length).toBe(0);
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe("Debt not found");
   });
 
   it("should get 0 debt with valid time but invalid search", async () => {
@@ -348,7 +347,7 @@ describe("GET /api/debt?filter", () => {
         search: "not test",
       });
     console.log(res.error);
-    expect(res.status).toBe(200);
-    expect(res.body.data.length).toBe(0);
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe("Debt not found");
   });
 });

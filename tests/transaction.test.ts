@@ -17,6 +17,7 @@ import {
   createDebtTestWithExpense,
   removeDebtTest,
 } from "./utils/debt-test-utils";
+import days from "../src/app/time";
 let saleId: number;
 let expenseId: number;
 let access_token: string;
@@ -404,34 +405,44 @@ describe("GET /api/transaction?filter", () => {
   });
 
   it("should can get all list transaction between time", async () => {
+    const firstday = days().startOf("week");
+    const start = firstday.set("date", firstday.get("date") + 5);
+    const end = firstday.set("date", firstday.get("date") + 9);
     const res = await supertest(web)
       .get("/api/transaction")
       .set("Authorization", "Bearer " + access_token)
-      .query({ time: [new Date("10-08-2023"), new Date("10-11-2023")] });
+      .query({
+        time: [start.format("DD-MM-YYYY"), end.format("DD-MM-YYYY")],
+      });
+    console.log(res.body.error, res.body.data);
+    expect(res.status).toBe(200);
+    expect(res.body.data.length).toBe(10);
+  });
+
+  it("should can get sale list transaction between time", async () => {
+    const firstday = days().startOf("week");
+    const end = firstday.set("date", firstday.get("date") + 5);
+    const res = await supertest(web)
+      .get("/api/transaction")
+      .set("Authorization", "Bearer " + access_token)
+      .query({
+        time: [firstday.format("DD-MM-YYYY"), end.format("DD-MM-YYYY")],
+        type: "sale",
+      });
     console.log(res.body.error, res.body.data);
     expect(res.status).toBe(200);
     expect(res.body.data.length).toBe(6);
   });
 
-  it("should can get sale list transaction between time", async () => {
-    const res = await supertest(web)
-      .get("/api/transaction")
-      .set("Authorization", "Bearer " + access_token)
-      .query({
-        time: [new Date("10-08-2023"), new Date("10-11-2023")],
-        type: "sale",
-      });
-    console.log(res.body.error, res.body.data);
-    expect(res.status).toBe(200);
-    expect(res.body.data.length).toBe(3);
-  });
-
   it("should can get expense list transaction between time", async () => {
+    const firstday = days().startOf("week");
+    const start = firstday.set("date", firstday.get("date") + 7);
+    const end = firstday.set("date", firstday.get("date") + 9);
     const res = await supertest(web)
       .get("/api/transaction")
       .set("Authorization", "Bearer " + access_token)
       .query({
-        time: [new Date("10-08-2023"), new Date("10-11-2023")],
+        time: [start.format("DD-MM-YYYY"), end.format("DD-MM-YYYY")],
         type: "expense",
       });
     console.log(res.body.error, res.body.data);
@@ -440,11 +451,13 @@ describe("GET /api/transaction?filter", () => {
   });
 
   it("should can get all sale transaction between time with search", async () => {
+    const firstday = days().startOf("week");
+    const end = firstday.set("date", firstday.get("date") + 9);
     const res = await supertest(web)
       .get("/api/transaction")
       .set("Authorization", "Bearer " + access_token)
       .query({
-        time: [new Date("10-01-2023"), new Date("10-11-2023")],
+        time: [firstday.format("DD-MM-YYYY"), end.format("DD-MM-YYYY")],
         search: "test 1",
       });
     console.log(res.body.error, res.body.data);
@@ -453,30 +466,58 @@ describe("GET /api/transaction?filter", () => {
   });
 
   it("should can get all transaction between time with category  search", async () => {
+    const firstday = days().startOf("week");
+    const end = firstday.set("date", firstday.get("date") + 9);
     const res = await supertest(web)
       .get("/api/transaction")
       .set("Authorization", "Bearer " + access_token)
       .query({
-        time: [new Date("10-01-2023"), new Date("10-11-2023")],
+        time: [firstday.format("DD-MM-YYYY"), end.format("DD-MM-YYYY")],
         search: "kartu",
       });
-    console.log(res.body.error, res.body.data);
     expect(res.status).toBe(200);
+    expect(res.body.data.length).not.toBe(0);
     res.body.data.forEach((sale: { category: string }) => {
       expect(sale.category).toBe("Kartu");
     });
   });
 
   it("should can get all transaction between time with expense search", async () => {
+    const firstday = days().startOf("week");
+    const end = firstday.set("date", firstday.get("date") + 9);
     const res = await supertest(web)
       .get("/api/transaction")
       .set("Authorization", "Bearer " + access_token)
       .query({
-        time: [new Date("10-01-2023"), new Date("10-11-2023")],
+        time: [firstday.format("DD-MM-YYYY"), end.format("DD-MM-YYYY")],
         search: "expense test 1",
       });
     console.log(res.body.error, res.body.data);
     expect(res.status).toBe(200);
     expect(res.body.data.length).toBe(1);
+  });
+
+  it("should can get transaction today", async () => {
+    const res = await supertest(web)
+      .get("/api/transaction")
+      .set("Authorization", "Bearer " + access_token);
+    console.log(res.body.data);
+    expect(res.status).toBe(200);
+    expect(res.body.data[0].created_at).toBe(
+      days().startOf("day").toISOString()
+    );
+    expect(res.body.data.length).toBe(1);
+  });
+
+  it("should reject get transaction with invalid keyword search", async () => {
+    const res = await supertest(web)
+      .get("/api/transaction")
+      .set("Authorization", "Bearer " + access_token)
+      .query({
+        search: "invalid seach",
+      });
+    console.log(res.body.data);
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe("Transaction not found");
   });
 });

@@ -2,6 +2,7 @@ import supertest from "supertest";
 import web from "../../src/app/web";
 import { db } from "../../src/app/db";
 import { randomInt } from "./product-test-utils";
+import days from "../../src/app/time";
 
 export const createReceivableTest = async (
   access_token: string,
@@ -75,6 +76,7 @@ export const getReceivableTest = async (id: number) => {
 };
 
 export const generateSaleReceivable = async (access_token: string) => {
+  const firstday = days().startOf("week");
   for (let i = 1; i <= 10; i++) {
     let category: string;
     const rand = randomInt(1, 3);
@@ -89,7 +91,7 @@ export const generateSaleReceivable = async (access_token: string) => {
         category = "Kartu";
         break;
     }
-    const res = await supertest(web)
+    await supertest(web)
       .post("/api/transaction/sale")
       .set("Authorization", "Bearer " + access_token)
       .send({
@@ -102,7 +104,9 @@ export const generateSaleReceivable = async (access_token: string) => {
           total: i * 10000,
           paid: i % 2 == 0 ? false : true,
         },
-        created_at: new Date("10-" + i + "-2023").toISOString(),
+        created_at: firstday
+          .set("date", firstday.get("date") + i - 1)
+          .toISOString(),
       });
   }
 };

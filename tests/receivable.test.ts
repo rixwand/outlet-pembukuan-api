@@ -11,6 +11,7 @@ import {
 } from "./utils/transaction-utils-test";
 import { addUser, getLoginToken, removeUser } from "./utils/user-test-utils";
 import web from "../src/app/web";
+import days from "../src/app/time";
 
 let access_token: string;
 let receivable_id: number;
@@ -182,11 +183,13 @@ describe("GET /api/receivable?filter", () => {
   });
 
   it("should can get receivable beetween time", async () => {
+    const firstday = days().startOf("week");
+    const end = firstday.set("date", firstday.get("date") + 4);
     const res = await supertest(web)
       .get("/api/receivable")
       .set("Authorization", "Bearer " + access_token)
       .query({
-        time: [new Date("10-01-2023"), new Date("10-05-2023")],
+        time: [firstday.format("DD-MM-YYYY"), end.format("DD-MM-YYYY")],
       });
     console.log(res.body.data);
     expect(res.status).toBe(200);
@@ -194,11 +197,13 @@ describe("GET /api/receivable?filter", () => {
   });
 
   it("should can get receivable beetween time with paid true", async () => {
+    const firstday = days().startOf("week");
+    const end = firstday.set("date", firstday.get("date") + 4);
     const res = await supertest(web)
       .get("/api/receivable")
       .set("Authorization", "Bearer " + access_token)
       .query({
-        time: [new Date("10-01-2023"), new Date("10-05-2023")],
+        time: [firstday.format("DD-MM-YYYY"), end.format("DD-MM-YYYY")],
         paid: true,
       });
     console.log(res.body.data);
@@ -207,40 +212,44 @@ describe("GET /api/receivable?filter", () => {
   });
 
   it("should can get receivable beetween time with paid false and search kartu", async () => {
+    const firstday = days().startOf("week");
+    const end = firstday.set("date", firstday.get("date") + 9);
     const res = await supertest(web)
       .get("/api/receivable")
       .set("Authorization", "Bearer " + access_token)
       .query({
-        time: ["10-01-2023", "10-10-2023"],
+        time: [firstday.format("DD-MM-YYYY"), end.format("DD-MM-YYYY")],
         paid: false,
         search: "kartu",
       });
     console.log(res.body.data);
     expect(res.status).toBe(200);
+    expect(res.body.data.length).not.toBe(0);
     res.body.data.forEach((receivable) => {
       expect(receivable.sale.category).toBe("Kartu");
     });
   });
 
-  it("should can get receivable with search not found ", async () => {
+  it("should reject get receivable with search not found ", async () => {
+    const firstday = days().startOf("week");
+    const end = firstday.set("date", firstday.get("date") + 9);
     const res = await supertest(web)
       .get("/api/receivable")
       .set("Authorization", "Bearer " + access_token)
       .query({
-        time: ["10-01-2023", "10-10-2023"],
+        time: [firstday.format("DD-MM-YYYY"), end.format("DD-MM-YYYY")],
         search: "kategori",
       });
-    console.log(res.body.data);
-    expect(res.status).toBe(200);
-    expect(res.body.data.length).toBe(0);
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe("Receivable not found");
   });
 
-  it("should can get all receivable", async () => {
+  it("should can get all receivable in a week", async () => {
     const res = await supertest(web)
       .get("/api/receivable")
       .set("Authorization", "Bearer " + access_token);
     console.log(res.body.data);
     expect(res.status).toBe(200);
-    expect(res.body.data.length).toBe(10);
+    expect(res.body.data.length).toBe(7);
   });
 });

@@ -145,10 +145,12 @@ const list = async (user: UserInfo, query: ListQuery) => {
       ],
     };
   }
-  return db.debt.findMany({
+  const debt = await db.debt.findMany({
     where: { AND: [{ user_id: user.id }, { paid }, filter] },
     select: returnValue,
   });
+  if (debt.length === 0) throw new ResponseError(404, "Debt not found");
+  else return debt;
 };
 
 export default { create, get, update, remove, list };

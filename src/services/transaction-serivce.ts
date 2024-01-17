@@ -15,6 +15,7 @@ import { idValidation } from "../validation/user-validation";
 import { Prisma } from "prisma/prisma-client";
 import { user_id } from "../../interfaces/Product";
 import { isDateInvalid } from "../helper/validation-helper";
+import days from "../app/time";
 
 const returnValue: Prisma.SaleSelect = {
   id: true,
@@ -265,8 +266,8 @@ const listTransaction = async (
   let filter: Prisma.SaleWhereInput | Prisma.ExpenseWhereInput = {};
   if (time) {
     isDateInvalid(time);
-    const gte = new Date(time[0]).toISOString();
-    const lte = new Date(time[1]).toISOString();
+    const gte = days(time[0], "DD-MM-YYYY").toISOString();
+    const lte = days(time[1], "DD-MM-YYYY").toISOString();
     filter = {
       AND: [
         {
@@ -282,9 +283,9 @@ const listTransaction = async (
       ],
     };
   } else {
-    const today = new Date();
     filter.created_at = {
-      gte: new Date(today.toLocaleDateString()).toISOString(),
+      gte: days().startOf("day").toISOString(),
+      lte: days().endOf("day").toISOString(),
     };
   }
 
@@ -335,6 +336,8 @@ const listTransaction = async (
     });
     transaction.push(...expenses);
   }
+  if (transaction.length === 0)
+    throw new ResponseError(404, "Transaction not found");
   return transaction;
 };
 

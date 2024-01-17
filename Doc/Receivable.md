@@ -160,7 +160,7 @@ Header :
 Query :
 
 - Search = with Receivable notes or sale name or sale category
-- time = beetwen dates, default this week
+- time = beetwen dates, default this week, format : DD-MM-YYYY
 - paid = boolean, default get all type receivable
 
 Response Body Success :
